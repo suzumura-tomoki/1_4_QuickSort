@@ -167,6 +167,11 @@ template<typename Type>
 template<typename KeyType>
 inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey)(Type&), Iterator head, Iterator tail, uint32_t _size) {
 
+	//参考にした資料
+	// ウィキペディア
+	//https://ja.wikipedia.org/wiki/%E3%82%AF%E3%82%A4%E3%83%83%E3%82%AF%E3%82%BD%E3%83%BC%E3%83%88#cite_ref-4
+	//過去の自作のクイックソート
+
 	//再帰したときに要素が1つだったら終了
 	if (_size <= 1)
 		return;
