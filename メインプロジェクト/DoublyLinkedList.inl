@@ -382,11 +382,14 @@ typename DoublyLinkedList<Type>::ConstIterator DoublyLinkedList<Type>::ConstIter
 
 		for (int i = 0; i < n; i++) {
 
+			//––”ö‚ð‰z‚¦‚é‚ÆƒAƒT[ƒVƒ‡ƒ“‚ª‚Å‚é‚æ‚¤•ÏX
+			// ˆÓ}‚µ‚È‚¢‹““®‚Å“®‚¢‚Ä‚µ‚Ü‚¤‚æ‚èAƒGƒ‰[‚É‚È‚é‚Ù‚¤‚ª—Ç‚¢‚Æ”»’f
+			// ƒR[ƒh—Ê‚àŽáŠ±ŒyŒ¸
 			//––”ö‚ð‰z‚¦‚È‚¢‚æ‚¤‚É’âŽ~‚·‚é
-			if (cit.pNode->pNext == nullptr)
-			{
-				return cit;
-			}
+			//if (cit.pNode->pNext == nullptr)
+			//{
+			//	return cit;
+			//}
 
 			cit++;
 		}
@@ -418,11 +421,14 @@ typename DoublyLinkedList<Type>::ConstIterator DoublyLinkedList<Type>::ConstIter
 
 		for (int i = 0; i < n; i++) {
 
+			//æ“ª‚ð‰z‚¦‚é‚ÆƒAƒT[ƒVƒ‡ƒ“‚ª‚Å‚é‚æ‚¤•ÏX
+			// ˆÓ}‚µ‚È‚¢‹““®‚Å“®‚¢‚Ä‚µ‚Ü‚¤‚æ‚èAƒGƒ‰[‚É‚È‚é‚Ù‚¤‚ª—Ç‚¢‚Æ”»’f
+			// ƒR[ƒh—Ê‚àŽáŠ±ŒyŒ¸
 			//æ“ª‚ð‰z‚¦‚È‚¢‚æ‚¤‚É’âŽ~‚·‚é
-			if (cit.pNode->pPrevious == nullptr)
-			{
-				return cit;
-			}
+			//if (cit.pNode->pPrevious == nullptr)
+			//{
+			//	return cit;
+			//}
 
 			cit--;
 		}

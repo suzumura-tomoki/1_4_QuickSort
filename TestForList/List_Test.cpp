@@ -1610,7 +1610,7 @@ namespace ex01_DataStructure
 			@details	ID:イテレータ追加機能-1\n
 						イテレータの末尾に進めたイテレータを返す機能のテストです。\n
 						リストが空の場合に先頭イテレータに対して呼び出した際の挙動を確認しています。\n
-						末尾のイテレータを返すと成功です。\n
+						正と負の値ではアサーション発生、0の際は末尾のイテレータを返すと成功です。\n
 		*//***********************************************************************************/
 		TEST(IteratorOperatorPlus, PlusWhenEmpty)
 		{
@@ -1618,16 +1618,16 @@ namespace ex01_DataStructure
 			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
 			DoublyLinkedList<ResultData>::Iterator itEnd = list.GetEnd();
 
-			EXPECT_TRUE(it + 1 == itEnd);
+			EXPECT_DEATH(it + 1, "Assertion failed");
 			EXPECT_TRUE(it + 0 == itEnd);
-			EXPECT_TRUE(it + -1 == itEnd);
+			EXPECT_DEATH(it + -1, "Assertion failed");
 
 			//コンストイテレータ
 			DoublyLinkedList<ResultData>::ConstIterator cit = list.GetConstBegin();
 
-			EXPECT_TRUE(cit + 1 == itEnd);
+			EXPECT_DEATH(cit + 1, "Assertion failed");
 			EXPECT_TRUE(cit + 0 == itEnd);
-			EXPECT_TRUE(cit + -1 == itEnd);
+			EXPECT_DEATH(cit + -1, "Assertion failed");
 		}
 
 		/**********************************************************************************//**
@@ -1635,7 +1635,7 @@ namespace ex01_DataStructure
 			@details	ID:イテレータ追加機能-2\n
 						イテレータの末尾に進めたイテレータを返す機能のテストです。\n
 						末尾イテレータに対して呼び出した際の挙動を確認しています。\n
-						０、正の数では末尾のイテレータを返し、負の数では先頭に移動したイテレータを返すと成功です。\n
+						正の数ではアサーション発生、０では末尾のイテレータを返し、負の数では先頭に移動したイテレータを返すと成功です。\n
 		*//***********************************************************************************/
 		TEST(IteratorOperatorPlus, CallByEndIterator)
 		{
@@ -1645,14 +1645,14 @@ namespace ex01_DataStructure
 			list.Insert(it, data);
 
 			it = list.GetEnd();
-			EXPECT_TRUE((it + 1) == list.GetEnd());
+			EXPECT_DEATH(it + 1, "Assertion failed");
 			EXPECT_TRUE((it + 0) == list.GetEnd());
 			EXPECT_TRUE((it + -1) == list.GetBegin());
 
 			//コンストイテレータ
 			DoublyLinkedList<ResultData>::ConstIterator cit = list.GetConstEnd();
 
-			EXPECT_TRUE((cit + 1) == list.GetEnd());
+			EXPECT_DEATH(cit + 1, "Assertion failed");
 			EXPECT_TRUE((cit + 0) == list.GetEnd());
 			EXPECT_TRUE((cit + -1) == list.GetBegin());
 
@@ -1663,7 +1663,7 @@ namespace ex01_DataStructure
 			@details	ID:イテレータ追加機能-3\n
 						イテレータの末尾に進めたイテレータを返す機能のテストです。\n
 						リストに二つ以上の要素がある場合に呼び出した際の挙動を確認しています。\n
-						指定数移動したイテレータを返し、範囲外の数では末尾または先頭のイテレータを返すと成功です。\n
+						指定数移動したイテレータを返し、範囲外の数ではアサーション発生で成功です。\n
 		*//***********************************************************************************/
 		TEST(IteratorOperatorPlus, PlusWhenMultipleData)
 		{
@@ -1675,22 +1675,22 @@ namespace ex01_DataStructure
 
 			it++;//二番目の要素へ
 
-			EXPECT_TRUE((it + 2) == list.GetEnd());//末尾範囲外
+			EXPECT_DEATH(it + 2, "Assertion failed");//末尾範囲外
 			EXPECT_TRUE((it + 1) == list.GetEnd());//末尾
 			EXPECT_TRUE((it + 0) == ++list.GetBegin());//２番目の要素
 			EXPECT_TRUE((it + -1) == list.GetBegin());//先頭
-			EXPECT_TRUE((it + -2) == list.GetBegin());//先頭範囲外
+			EXPECT_DEATH(it + -2, "Assertion failed");//先頭範囲外
 
 			//コンストイテレータ
 			DoublyLinkedList<ResultData>::ConstIterator cit = list.GetConstBegin();
 
 			cit++;//２番目の要素へ
 
-			EXPECT_TRUE((cit + 2) == list.GetEnd());
+			EXPECT_DEATH(cit + 2, "Assertion failed");
 			EXPECT_TRUE((cit + 1) == list.GetEnd());
 			EXPECT_TRUE((cit + 0) == ++list.GetBegin());
 			EXPECT_TRUE((cit + -1) == list.GetBegin());
-			EXPECT_TRUE((cit + -2) == list.GetBegin());
+			EXPECT_DEATH(cit + -2, "Assertion failed");
 		}
 
 		//====================== 先頭に指定した数進めたイテレータを返す ==========================
@@ -1723,7 +1723,7 @@ namespace ex01_DataStructure
 			@details	ID:イテレータ追加機能-5\n
 						イテレータの先頭に進めたイテレータを返す機能のテストです。\n
 						リストが空の場合に先頭イテレータに対して呼び出した際の挙動を確認しています。\n
-						先頭のイテレータを返すと成功です。\n
+						正と負の値ではアサーション発生、0の際は先頭のイテレータを返すと成功です。\n
 		*//***********************************************************************************/
 		TEST(IteratorOperatorMinus, MinusWhenEmpty)
 		{
@@ -1731,16 +1731,17 @@ namespace ex01_DataStructure
 			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
 			DoublyLinkedList<ResultData>::Iterator itBegin = list.GetBegin();
 
-			EXPECT_TRUE(it - 1 == itBegin);
+			EXPECT_DEATH(it - 1, "Assertion failed");
 			EXPECT_TRUE(it - 0 == itBegin);
-			EXPECT_TRUE(it - -1 == itBegin);
+			EXPECT_DEATH(it - -1, "Assertion failed");
 
 			//コンストイテレータ
 			DoublyLinkedList<ResultData>::ConstIterator cit = list.GetConstBegin();
 
-			EXPECT_TRUE(cit - 1 == itBegin);
+			EXPECT_DEATH(cit - 1, "Assertion failed");
 			EXPECT_TRUE(cit - 0 == itBegin);
-			EXPECT_TRUE(cit - -1 == itBegin);
+			EXPECT_DEATH(cit - -1, "Assertion failed");
+			
 		}
 
 		/**********************************************************************************//**
@@ -1748,7 +1749,7 @@ namespace ex01_DataStructure
 			@details	ID:イテレータ追加機能-6\n
 						イテレータの先頭に進めたイテレータを返す機能のテストです。\n
 						先頭イテレータに対して呼び出した際の挙動を確認しています。\n
-						０、正の数では先頭のイテレータを返し、負の数では末尾に移動したイテレータを返すと成功です。\n
+						正の数ではアサーション発生、０では末尾のイテレータを返し、負の数では末尾に移動したイテレータを返すと成功です。\n
 		*//***********************************************************************************/
 		TEST(IteratorOperatorMinus, CallByTopIterator)
 		{
@@ -1757,15 +1758,15 @@ namespace ex01_DataStructure
 
 			list.Insert(it, data);
 
-			EXPECT_TRUE((it - 1) == list.GetBegin());
-			EXPECT_TRUE((it - 0) == list.GetBegin());
+			EXPECT_DEATH(it - 1, "Assertion failed");
+			EXPECT_TRUE(it - 0 == list.GetBegin());
 			EXPECT_TRUE((it - -1) == list.GetEnd());
 
 			//コンストイテレータ
 			DoublyLinkedList<ResultData>::ConstIterator cit = list.GetConstBegin();
 
-			EXPECT_TRUE((cit - 1) == list.GetBegin());
-			EXPECT_TRUE((cit - 0) == list.GetBegin());
+			EXPECT_DEATH(cit - 1, "Assertion failed");
+			EXPECT_TRUE(cit - 0 == list.GetBegin());
 			EXPECT_TRUE((cit - -1) == list.GetEnd());
 
 		}
@@ -1788,22 +1789,22 @@ namespace ex01_DataStructure
 
 			it++;//二番目の要素へ
 
-			EXPECT_TRUE((it - 2) == list.GetBegin());//先頭範囲外
+			EXPECT_DEATH(it - 2, "Assertion failed");//末尾範囲外
 			EXPECT_TRUE((it - 1) == list.GetBegin());//先頭
 			EXPECT_TRUE((it - 0) == ++list.GetBegin());//２番目の要素
 			EXPECT_TRUE((it - -1) == list.GetEnd());//末尾
-			EXPECT_TRUE((it - -2) == list.GetEnd());//末尾範囲外
+			EXPECT_DEATH(it - -2, "Assertion failed");//先頭範囲外
 
 			//コンストイテレータ
 			DoublyLinkedList<ResultData>::ConstIterator cit = list.GetConstBegin();
 
 			cit++;//２番目の要素へ
 
-			EXPECT_TRUE((cit - 2) == list.GetBegin());//先頭範囲外
+			EXPECT_DEATH(cit - 2, "Assertion failed");
 			EXPECT_TRUE((cit - 1) == list.GetBegin());//先頭
 			EXPECT_TRUE((cit - 0) == ++list.GetBegin());//２番目の要素
 			EXPECT_TRUE((cit - -1) == list.GetEnd());//末尾
-			EXPECT_TRUE((cit - -2) == list.GetEnd());//末尾範囲外
+			EXPECT_DEATH(cit - -2, "Assertion failed");
 		}
 
 	}//namespace chapter2
