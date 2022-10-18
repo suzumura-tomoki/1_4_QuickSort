@@ -277,7 +277,7 @@ public:
 
 	/**
 	 * @brief リストをKeyType型のキーについてソートします
-	 * @tparam[in] KeyType キーの型
+	 * @tparam KeyType キーの型
 	 * @param[in] order 昇順または降順の指定
 	 * @param[in] fpGetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
 	 */
@@ -287,7 +287,7 @@ public:
 private:
 	/**
 	 * @brief 再帰しながらリストをKeyType型のキーについてソートします
-	 * @tparam[in] KeyType キーの型
+	 * @tparam KeyType キーの型
 	 * @param[in] order 昇順または降順の指定
 	 * @param[in] fpGetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
 	 * @param[in] head 先頭のイテレータ
@@ -298,8 +298,8 @@ private:
 	void QuickSort(SortOrder order, KeyType(*fpGetKey)(Type&), Iterator head, Iterator tail, uint32_t _size);
 
 	/**
-	 * @brief 再帰しながらリストをKeyType型のキーについてソートします
-	 * @tparam[in] KeyType キーの型
+	 * @brief ３つのキーからピボットを取得します
+	 * @tparam KeyType キーの型
 	 * @param[in] head 先頭要素のキー
 	 * @param[in] middle 中央要素のキー
 	 * @param[in] tail 末尾要素のキー
