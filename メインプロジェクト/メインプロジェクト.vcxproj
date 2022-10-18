@@ -146,13 +146,9 @@
     <ClInclude Include="DoublyLinkedList.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="ResultData.h" />
-    <ClInclude Include="Sort.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Sort.inl">
-      <FileType>Text</FileType>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DoublyLinkedList.inl" />
