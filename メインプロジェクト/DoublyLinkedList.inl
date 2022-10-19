@@ -177,9 +177,9 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 		return;
 
 	//基準値を決める
-	// 先頭・中央・末尾から中間の値を選び基準値とする　最悪計算量の回避、完全な回避ではない
+	// 先頭・２番目・末尾から中間の値を選び基準値とする
 	KeyType keyHead = fpGetKey(*head);
-	KeyType keyMiddle = fpGetKey(*(head + (_size / 2)));
+	KeyType keySecond = fpGetKey(*(++head));
 	KeyType keyTail = fpGetKey(*tail);
 
 	KeyType pivot = GetPivot(keyHead, keyMiddle, keyTail);
@@ -189,39 +189,44 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 	Iterator workTail = tail;
 	int cntHeadMoved = 0;
 	int cntTailMoved = 0;
-#if 0 //片方がピボットを無視する探索　以上未満(以下超過)
-	//ピボット同士の入れ替えをしない　探索終了時に入れ替えが終わっていない特殊ケースがある
+
+	//両方向からピボットを含めて探索　以上以下(以下以上)
+	//全て同じデータでも全て入れ替えるが特殊ケースがない
 	while (true) {
 		switch (order)
 		{
 		case SortOrder::ASCENDING_ORDER:
 			//先頭から順に基準値以上の値を持つ要素を探索
-			while (workHead != workTail && fpGetKey(*workHead) < pivot) {
+			//ピボットよりデータが小さい間、末尾に進む
+			while (fpGetKey(*workHead) < pivot) {
 				workHead++;
 				cntHeadMoved++;
 			}
-			//末尾から順に基準値未満の値を持つ要素を探索
-			while (workHead != workTail && fpGetKey(*workTail) >= pivot) {
+			//末尾から順に基準値以下の値を持つ要素を探索
+			//ピボットよりデータが大きい間、先頭に進む
+			while (fpGetKey(*workTail) > pivot) {
 				workTail--;
 				cntTailMoved++;
 			}
 			break;
 		case SortOrder::DESCENDING_ORDER:
 			//先頭から順に基準値以下の値を持つ要素を探索
-			while (workHead != workTail && fpGetKey(*workHead) > pivot) {
+			//ピボットよりデータが大きい間、末尾に進む
+			while (fpGetKey(*workHead) > pivot) {
 				workHead++;
 				cntHeadMoved++;
 			}
-			//末尾から順に基準値より大きい値を持つ要素を探索
-			while (workHead != workTail && fpGetKey(*workTail) <= pivot) {
+			//末尾から順に基準値以上の値を持つ要素を探索
+			//ピボットよりデータが小さい間、先頭に進む
+			while (fpGetKey(*workTail) < pivot) {
 				workTail--;
 				cntTailMoved++;
 			}
 			break;
 		}
 
-		//入れ替える要素がなくなると探索終了
-		if (workHead == workTail) {
+		//ヘッドとテールが同じ場所またはすれ違っていると探索終了
+		if (cntHeadMoved + cntTailMoved >= _size - 1) {
 			break;
 		}
 
@@ -230,40 +235,13 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 	}
 
 	//入れ替える要素がなくなるまで再帰
-
-	if (cntHeadMoved == 0) {//ヘッドの移動が0の場合
-		//※昇順についての記述（かっこの中は降順についての記述）
-		//すべてのデータがピボット以上（以下）の値
-		//PPP.. AP APP.. AAPP.. APPAP PPPA	P:ピボットと同じ値	A:ピボットより大きい値(ピボット未満の値)
-		//ヘッドがPなら何もしない
-		//ヘッドがAならPと入れ替え、Pは要素から選んでいるため必ず存在する
-		if (fpGetKey(*head) == pivot) {
-			//ヘッドがPなら何もしない
-		}
-		else
-		{
-			//ヘッドがAならPと入れ替え
-
-			//末尾から順にPを探索
-			workTail = tail;
-			while (workHead != workTail && fpGetKey(*workTail) != pivot) {//workHead != workTailはいらないが念のため付けておく
-				workTail--;
-			}
-			
-			Swap(head, workTail);
-		}
-		//ヘッドをソート範囲から外して再帰
-		QuickSort(order, fpGetKey, head + 1, tail, _size - 1);
-		return;
-	}
-
-	QuickSort(order, fpGetKey, head, workHead - 1, cntHeadMoved);
-	QuickSort(order, fpGetKey, workTail, tail, cntTailMoved + 1);
-#else//両方向からピボットを含めて探索　以上以下(以下以上)
-	//ピボット同士の入れ替えをする　全て同じデータでも全て入れ替える　特殊ケースがない
-
-	//TODO
-#endif
+	//workHeadとworkTailは１つすれ違って隣り合っているか、同じ場所にいる、
+	//すれ違って隣り合っているなら１ずつ戻って左右の集合について再帰
+	//ここまでなら１ずつ戻る必要はない
+	//同じ場所にいるときはその場所がピボットでありこの位置から動かす必要がないので
+	//１ずつ戻りピボットを除いて左右の集合について再帰
+	QuickSort(order, fpGetKey, head, --workHead, cntHeadMoved);
+	QuickSort(order, fpGetKey, ++workTail, tail, cntTailMoved);
 }
 
 template<typename Type>
