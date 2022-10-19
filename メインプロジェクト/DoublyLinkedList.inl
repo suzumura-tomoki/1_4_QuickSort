@@ -189,6 +189,8 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 	Iterator workTail = tail;
 	int cntHeadMoved = 0;
 	int cntTailMoved = 0;
+#if 0 //片方がピボットを無視する探索　以上未満(以下超過)
+	//ピボット同士の入れ替えをしない　探索終了時に入れ替えが終わっていない特殊ケースがある
 	while (true) {
 		switch (order)
 		{
@@ -257,6 +259,11 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 
 	QuickSort(order, fpGetKey, head, workHead - 1, cntHeadMoved);
 	QuickSort(order, fpGetKey, workTail, tail, cntTailMoved + 1);
+#else//両方向からピボットを含めて探索　以上以下(以下以上)
+	//ピボット同士の入れ替えをする　全て同じデータでも全て入れ替える　特殊ケースがない
+
+	//TODO
+#endif
 }
 
 template<typename Type>
