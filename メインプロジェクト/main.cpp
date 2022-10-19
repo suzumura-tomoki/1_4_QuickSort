@@ -45,7 +45,8 @@ int main() {
 				break;
 			}
 
-			data.score += readCharacter;
+			data.score *= 10;
+			data.score += readCharacter - '0';
 		}
 
 		while (true)
@@ -78,76 +79,59 @@ int main() {
 
 	ifsScoreFile.close();
 
+	//ソートして出力
 
-	//=========メインループ=========
-	
 	//ソートするキーを指定する関数オブジェクト
 	auto fpGetName = [](ResultData& data) {return data.name; };
-	auto fpGetScore = [](ResultData& data) {
-		int score = 0;
-		int length = data.score.length();
-		for (size_t i = 0; i < length; i++)
-		{
-			score *= 10;
-			score += data.score[i] - 48;
-		}
-		return score;
-	};
-	while (true)
-	{
-		system("cls");
+	auto fpGetScore = [](ResultData& data) {return data.score; };
 
-		//オーダーの選択
-		printf("ソート順を選択してください\n 昇順:0 降順:1 終了:2\n");
-		int inputOrder;
-		scanf_s("%d", &inputOrder);
-		if (inputOrder == 2) {
-			break;
-		}
-		if (inputOrder != 0 && inputOrder != 1) {
-			continue;
-		}
+	//末尾のイテレータ
+	const DoublyLinkedList<ResultData>::Iterator END = list.GetEnd();
 
-		//キーの選択
-		printf("キーを選択してください\n 名前:0 スコア:1\n");
-		int inputKey;
-		scanf_s("%d", &inputKey);
-		if (inputKey != 0 && inputKey != 1) {
-			continue;
-		}
-
-		if (inputOrder == 0) {
-			if (inputKey == 0) {
-				list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
-			}
-			else
-			{
-				list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
-			}
-		}
-		else {
-			if (inputKey == 0) {
-				list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
-			}
-			else
-			{
-				list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
-			}
-		}
-
-		//ソートしたデータを出力
-		const DoublyLinkedList<ResultData>::Iterator end = list.GetEnd();
-		for (it = list.GetBegin(); it != end; it++) {
-			printf(it->score.c_str());
-			printf("  ");
-			printf(it->name.c_str());
-			printf("\n");
-		}
-
-		printf("\n続行:ENTER\n");
-		rewind(stdin);
-		getchar();
+	list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
+	printf("\nスコア昇順\n\n");
+	//ソートしたデータを出力
+	for (it = list.GetBegin(); it != END; it++) {
+		printf(std::to_string(it->score).c_str());
+		printf("  ");
+		printf(it->name.c_str());
+		printf("\n");
 	}
-	
+
+	list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
+	printf("\n\nスコア降順\n\n");
+	//ソートしたデータを出力
+	for (it = list.GetBegin(); it != END; it++) {
+		printf(std::to_string(it->score).c_str());
+		printf("  ");
+		printf(it->name.c_str());
+		printf("\n");
+	}
+
+	list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
+	//ソートしたデータを出力
+	printf("\n\n名前昇順\n\n");
+	for (it = list.GetBegin(); it != END; it++) {
+		printf(std::to_string(it->score).c_str());
+		printf("  ");
+		printf(it->name.c_str());
+		printf("\n");
+	}
+
+	list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
+	printf("\n\n名前降順\n\n");
+	//ソートしたデータを出力
+	for (it = list.GetBegin(); it != END; it++) {
+		printf(std::to_string(it->score).c_str());
+		printf("  ");
+		printf(it->name.c_str());
+		printf("\n");
+	}
+
+	printf("\n続行:ENTER\n");
+	rewind(stdin);
+	getchar();
+
+
 	return 0;
 }
