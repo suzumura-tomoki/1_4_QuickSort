@@ -182,7 +182,7 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 	KeyType keySecond = fpGetKey(*(++head));
 	KeyType keyTail = fpGetKey(*tail);
 
-	KeyType pivot = GetPivot(keyHead, keyMiddle, keyTail);
+	const KeyType PIVOT = GetPivot(keyHead, keyMiddle, keyTail);
 
 	//入れ替える要素を探索
 	Iterator workHead = head;
@@ -198,13 +198,13 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 		case SortOrder::ASCENDING_ORDER:
 			//先頭から順に基準値以上の値を持つ要素を探索
 			//ピボットよりデータが小さい間、末尾に進む
-			while (fpGetKey(*workHead) < pivot) {
+			while (fpGetKey(*workHead) < PIVOT) {
 				workHead++;
 				cntHeadMoved++;
 			}
 			//末尾から順に基準値以下の値を持つ要素を探索
 			//ピボットよりデータが大きい間、先頭に進む
-			while (fpGetKey(*workTail) > pivot) {
+			while (fpGetKey(*workTail) > PIVOT) {
 				workTail--;
 				cntTailMoved++;
 			}
@@ -212,13 +212,13 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 		case SortOrder::DESCENDING_ORDER:
 			//先頭から順に基準値以下の値を持つ要素を探索
 			//ピボットよりデータが大きい間、末尾に進む
-			while (fpGetKey(*workHead) > pivot) {
+			while (fpGetKey(*workHead) > PIVOT) {
 				workHead++;
 				cntHeadMoved++;
 			}
 			//末尾から順に基準値以上の値を持つ要素を探索
 			//ピボットよりデータが小さい間、先頭に進む
-			while (fpGetKey(*workTail) < pivot) {
+			while (fpGetKey(*workTail) < PIVOT) {
 				workTail--;
 				cntTailMoved++;
 			}
@@ -246,7 +246,7 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 
 template<typename Type>
 template<typename KeyType>
-inline KeyType DoublyLinkedList<Type>::GetPivot(KeyType head, KeyType middle, KeyType tail)
+inline const KeyType& DoublyLinkedList<Type>::GetPivot(const KeyType& head, const KeyType& middle, const KeyType& tail)
 {
 	if (head < middle) {
 		if (tail < head) {

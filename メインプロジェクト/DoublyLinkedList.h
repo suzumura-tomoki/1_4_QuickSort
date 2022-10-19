@@ -306,7 +306,7 @@ private:
 	 * @return ３つの引数の中央値
 	 */
 	template<typename KeyType>
-	KeyType GetPivot(KeyType head, KeyType middle, KeyType tail);
+	const KeyType& GetPivot(const KeyType& head, const KeyType& middle, const KeyType& tail);
 
 	/**
 	 * @brief イテレータの示すデータを入れ替えます
