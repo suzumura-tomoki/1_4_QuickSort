@@ -18,57 +18,31 @@ int main() {
 	//スコア読み込み
 	while (ifsScoreFile.eof() == false)
 	{
-		ResultData data{};
-
 		//ファイルの読み取り
-		char readCharacter;
-		while (true)
+
+		ResultData data{};
+		std::string readString{};
+
+		//スコアの読み込み
+		std::getline(ifsScoreFile, readString, '\t');
+
+		//ファイル終端の改行を無視
+		if (ifsScoreFile.eof())
 		{
-			ifsScoreFile.get(readCharacter);
-
-			//ファイル終端の改行を無視
-			if (ifsScoreFile.eof())
-			{
-				break;
-			}
-
-			if (readCharacter == ' ')
-			{
-				break;
-			}
-			if (readCharacter == '　')
-			{
-				break;
-			}
-			if (readCharacter == '\t')
-			{
-				break;
-			}
-
-			data.score *= 10;
-			data.score += readCharacter - '0';
+			break;
 		}
 
-		while (true)
+		//数字の文字列を整数値に変換
+		data.score = std::stoi(readString);
+
+
+		//名前の読み込み
+		//ResultDataに直接読み込む
+		std::getline(ifsScoreFile, data.name, '\n');
+
+		//ファイル終端の改行を無視
+		if (ifsScoreFile.eof())
 		{
-			ifsScoreFile.get(readCharacter);
-
-			//ファイル終端の改行を無視
-			if (ifsScoreFile.eof())
-			{
-				break;
-			}
-
-			if (readCharacter == '\n')
-			{
-				break;
-			}
-			data.name += readCharacter;
-
-		}
-
-		//ファイル終端を無視
-		if (ifsScoreFile.eof()) {
 			break;
 		}
 
@@ -83,7 +57,7 @@ int main() {
 
 	//ソートするキーを指定する関数オブジェクト
 	auto fpGetName = [](const ResultData& data) ->const std::string& {return data.name; };
-	auto fpGetScore = [](const ResultData& data) ->const int&{return data.score; };
+	auto fpGetScore = [](const ResultData& data) ->const int& {return data.score; };
 
 	//末尾のイテレータ
 	const DoublyLinkedList<ResultData>::Iterator END = list.GetEnd();
