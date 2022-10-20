@@ -288,7 +288,7 @@ public:
 	 * @brief リストをKeyType型のキーについてソートします
 	 * @tparam KeyType キーの型
 	 * @param[in] order 昇順または降順の指定
-	 * @param[in] GetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
+	 * @param[in] GetKey 格納されているデータからconst KeyType&型のキーを取得する関数オブジェクトのポインタ
 	 */
 	template<typename KeyType>
 	void Sort(SortOrder order, FuncGetKey<KeyType> GetKey);
@@ -301,7 +301,7 @@ private:
 	 * @brief 再帰しながらリストをKeyType型のキーについてソートします
 	 * @tparam KeyType キーの型
 	 * @param[in] order 昇順または降順の指定
-	 * @param[in] GetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
+	 * @param[in] GetKey 格納されているデータからconst KeyType&型のキーを取得する関数オブジェクトのポインタ
 	 * @param[in] head 先頭のイテレータ
 	 * @param[in] tail 末尾のイテレータ
 	 * @param[in] _size 要素の数

@@ -9,21 +9,18 @@ namespace ex01_DataStructure
 		//=================================== グローバル変数 ===================================
 
 		/**
-		 * @brief データからスコアを取り出してint型に変換する関数オブジェクト
+		 * @brief 成績データからスコアを取り出す関数オブジェクト
 		 * @param[in] data リストに格納しているデータ
-		 * @return int型に変換したスコア
+		 * @return スコア
 		 */
-		auto fpGetScore = [](ResultData& data) {
-			int score = 0;
-			int length = data.score.length();
-			for (size_t i = 0; i < length; i++)
-			{
-				score *= 10;
-				score += data.score[i] - 48;
-			}
-			return score;
-		};
+		auto fpGetScore = [](const ResultData& data) ->const int&{return data.score;};
 
+		/**
+		 * @brief 成績データから名前を取り出す関数オブジェクト
+		 * @param[in] data リストに格納しているデータ
+		 * @return 名前
+		 */
+		auto fpGetName = [](const ResultData& data) ->const std::string& {return data.name; };
 
 		//=================================== リストのソート ===================================
 
@@ -39,7 +36,7 @@ namespace ex01_DataStructure
 		*//***********************************************************************************/
 		TEST(SortTest, TestWhenEmpty) {
 			DoublyLinkedList<ResultData> list;
-			auto fpGetName = [](ResultData& data) {return data.name; };
+			
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
 			EXPECT_EQ(0, list.GetSize());
 		}
@@ -57,7 +54,7 @@ namespace ex01_DataStructure
 			data.name = "test";
 			list.Insert(list.GetBegin(), data);
 
-			auto fpGetName = [](ResultData& data) {return data.name; };
+			
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
 
 			EXPECT_EQ(1, list.GetSize());
@@ -73,8 +70,8 @@ namespace ex01_DataStructure
 			DoublyLinkedList<ResultData> list;
 
 			//要素を2つ用意する
-			ResultData data1 = { "10", "a" };
-			ResultData data2 = { "20", "b" };
+			ResultData data1 = { 10, "a" };
+			ResultData data2 = { 20, "b" };
 
 			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
 			list.Insert(it, data1);
@@ -83,19 +80,22 @@ namespace ex01_DataStructure
 			//昇順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
 			EXPECT_EQ(data1.score, it->score);
+			EXPECT_EQ(data2.score, (it+1)->score);
 
 			//昇順　名前
-			auto fpGetName = [](ResultData& data) {return data.name; };
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
 			EXPECT_EQ(data1.name, it->name);
+			EXPECT_EQ(data2.name, (it + 1)->name);
 
 			//降順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
 			EXPECT_EQ(data2.score, it->score);
+			EXPECT_EQ(data1.score, (it + 1)->score);
 
 			//降順　名前
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
 			EXPECT_EQ(data2.name, it->name);
+			EXPECT_EQ(data1.name, (it + 1)->name);
 		}
 
 		/**********************************************************************************//**
@@ -107,30 +107,51 @@ namespace ex01_DataStructure
 			DoublyLinkedList<ResultData> list;
 
 			//要素を3つ用意する
-			ResultData data1 = { "10", "a" };
-			ResultData data2 = { "20", "b" };
+			ResultData data1 = { 10, "a" };
+			ResultData data2 = { 20, "b" };
 
 			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
 			list.Insert(it, data1);//同じ
 			list.Insert(it, data1);//同じ
 			list.Insert(it, data2);
 
+			//比較用の配列
+			//昇順になっている配列
+			ResultData asArray[3] = { data1, data1, data2 };
+			//降順になっている配列
+			ResultData desArray[3] = { data2, data1, data1 };
+
 			//昇順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data2.score, (list.GetEnd() - 1)->score);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
 
 			//昇順　名前
-			auto fpGetName = [](ResultData& data) {return data.name; };
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data2.name, (list.GetEnd() - 1)->name);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
 
 			//降順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data2.score, list.GetBegin()->score);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
 
 			//降順　名前
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data2.name, list.GetBegin()->name);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
 		}
 
 		/**********************************************************************************//**
@@ -141,44 +162,84 @@ namespace ex01_DataStructure
 		TEST(SortTest, TestWhenSorted) {
 			DoublyLinkedList<ResultData> list;
 		
-			auto fpGetName = [](ResultData& data) {return data.name; };
-
 			//要素を3つ用意する
-			ResultData data1 = { "10", "a" };
-			ResultData data2 = { "20", "b" };
+			ResultData data1 = { 10, "a" };
+			ResultData data2 = { 20, "b" };
 
 			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
 			list.Insert(it, data1);//同じ
 			list.Insert(it, data1);//同じ
 			list.Insert(it, data2);
 
+			//比較用の配列
+			//昇順になっている配列
+			ResultData asArray[3] = { data1, data1, data2 };
+			//降順になっている配列
+			ResultData desArray[3] = { data2, data1, data1 };
+
 			//昇順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data2.score, (list.GetEnd() - 1)->score);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
+
 			//昇順　スコア　2回目
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data2.score, (list.GetEnd() - 1)->score);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
 
 			//昇順　名前
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data2.name, (list.GetEnd() - 1)->name);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
+
 			//昇順　名前　2回目
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data2.name, (list.GetEnd() - 1)->name);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
 
 			//降順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data2.score, list.GetBegin()->score);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
+
 			//降順　スコア　2回目
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data2.score, list.GetBegin()->score);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
 
 			//降順　名前
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data2.name, list.GetBegin()->name);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
+
 			//降順　名前　2回目
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data2.name, list.GetBegin()->name);
+
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
 
 		}
 
@@ -190,25 +251,28 @@ namespace ex01_DataStructure
 		TEST(SortTest, TestWhenAfterSortAndInsert) {
 			DoublyLinkedList<ResultData> list;
 			
-			auto fpGetName = [](ResultData& data) {return data.name; };
-
 			//要素を2つ用意する
-			ResultData data10 = { "10", "d" };
-			ResultData data20 = { "20", "e" };
+			ResultData data10 = { 10, "d" };
+			ResultData data20 = { 20, "e" };
 
 			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
 			list.Insert(it, data10);
 			list.Insert(it, data20);
 
 			//挿入用の要素
-			ResultData data1 = { "1", "a" };
-			ResultData data2 = { "2", "b" };
-			ResultData data3 = { "3", "c" };
+			ResultData data1 = { 1, "a" };
+			ResultData data2 = { 2, "b" };
+			ResultData data3 = { 3, "c" };
+
+			//比較用の配列
+			//昇順になっている配列
+			ResultData asArray[5] = { data1, data2, data3, data10, data20 };
+			//降順になっている配列
+			ResultData desArray[5] = { data20, data10, data3, data2, data1 };
 
 			//4パターン
 			//昇順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data20.score, (list.GetEnd() - 1)->score);
 
 			//先頭、中央、末尾に挿入
 			list.Insert(it, data1);
@@ -217,11 +281,12 @@ namespace ex01_DataStructure
 
 			//昇順　スコア　2回目
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data1.score, it->score);
-			EXPECT_EQ(data2.score, (++it)->score);
-			EXPECT_EQ(data3.score, (++it)->score);
-			EXPECT_EQ(data10.score, (++it)->score);
-			EXPECT_EQ(data20.score, (++it)->score);
+
+			//データの並び順を確認
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
 
 			//挿入したデータの削除
 			for (int i = 0; i < 3; i++) {
@@ -231,7 +296,6 @@ namespace ex01_DataStructure
 			//2/4
 			//昇順　名前
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data20.name, (list.GetEnd() - 1)->name);
 
 			//先頭、中央、末尾に挿入
 			list.Insert(list.GetBegin(), data1);
@@ -240,12 +304,12 @@ namespace ex01_DataStructure
 
 			//昇順　名前　2回目
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
+
+			//データの並び順を確認
 			it = list.GetBegin();
-			EXPECT_EQ(data1.score, it->score);
-			EXPECT_EQ(data2.score, (++it)->score);
-			EXPECT_EQ(data3.score, (++it)->score);
-			EXPECT_EQ(data10.score, (++it)->score);
-			EXPECT_EQ(data20.score, (++it)->score);
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
 
 			//挿入したデータの削除
 			for (int i = 0; i < 3; i++) {
@@ -255,7 +319,6 @@ namespace ex01_DataStructure
 			//3/4
 			//降順　スコア
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
-			EXPECT_EQ(data20.score, list.GetBegin()->score);
 
 			//先頭、中央、末尾に挿入
 			list.Insert(list.GetBegin(), data1);
@@ -264,12 +327,12 @@ namespace ex01_DataStructure
 
 			//降順　スコア　2回目
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetScore);
-			it = list.GetEnd() - 1;
-			EXPECT_EQ(data1.score, it->score);
-			EXPECT_EQ(data2.score, (--it)->score);
-			EXPECT_EQ(data3.score, (--it)->score);
-			EXPECT_EQ(data10.score, (--it)->score);
-			EXPECT_EQ(data20.score, (--it)->score);
+
+			//データの並び順を確認
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
 
 			//挿入したデータの削除
 			for (int i = 0; i < 3; i++) {
@@ -279,7 +342,6 @@ namespace ex01_DataStructure
 			//4/4
 			//降順　名前
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
-			EXPECT_EQ(data20.name, list.GetBegin()->name);
 
 			//先頭、中央、末尾に挿入
 			list.Insert(list.GetBegin(), data1);
@@ -288,12 +350,12 @@ namespace ex01_DataStructure
 
 			//降順　名前　2回目
 			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, fpGetName);
-			it = list.GetEnd() - 1;
-			EXPECT_EQ(data1.score, it->score);
-			EXPECT_EQ(data2.score, (--it)->score);
-			EXPECT_EQ(data3.score, (--it)->score);
-			EXPECT_EQ(data10.score, (--it)->score);
-			EXPECT_EQ(data20.score, (--it)->score);
+
+			//データの並び順を確認
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(desArray[i].score, it++->score);
+			}
 
 		}
 
@@ -305,7 +367,38 @@ namespace ex01_DataStructure
 		TEST(SortTest, TestKeyIsNull) {
 			DoublyLinkedList<ResultData> list;
 
-			list.Sort<std::string>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, nullptr);
+			//挿入用のデータ
+			ResultData data1 = { 1, "a" };
+			ResultData data2 = { 2, "b" };
+			ResultData data3 = { 3, "c" };
+
+			//比較用の配列
+			//昇順になっている配列
+			ResultData asArray[3] = { data1, data2, data3};
+
+			//リストに挿入
+			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
+			for (int i = 0; i < 3; i++) {
+				list.Insert(it, asArray[i]);
+			}
+
+			//昇順にソート
+			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
+
+			//データの並び順を確認
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
+
+			//第二引数にnullptrを渡してソート
+			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, nullptr);
+
+			//データの並び順を確認
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(asArray[i].score, it++->score);
+			}
 		}
 
 		/**********************************************************************************//**
@@ -320,7 +413,7 @@ namespace ex01_DataStructure
 			DoublyLinkedList<ResultData> list;
 
 			//キーの型がテンプレート引数と引数で異なる
-			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, [](ResultData& data) {return data.name; });
+			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetName);
 #else
 			SUCCEED();
 #endif // SORT_TEST_KEY_IS_IRREGULAR
