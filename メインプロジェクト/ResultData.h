@@ -7,6 +7,6 @@
 struct ResultData
 {
 public:
-	int score;
-	std::string name;
+	int score=0;
+	std::string name="";
 };

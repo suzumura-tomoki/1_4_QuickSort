@@ -145,7 +145,7 @@ typename DoublyLinkedList<Type>::ConstIterator DoublyLinkedList<Type>::GetConstE
 
 template<typename Type>
 template<typename KeyType>
-void DoublyLinkedList<Type>::Sort(SortOrder order, KeyType(*fpGetKey)(Type&))
+void DoublyLinkedList<Type>::Sort(SortOrder order, FuncGetKey<KeyType> GetKey)
 {
 	if (size <= 1)
 	{
@@ -153,19 +153,19 @@ void DoublyLinkedList<Type>::Sort(SortOrder order, KeyType(*fpGetKey)(Type&))
 		return;
 	}
 
-	if (fpGetKey == nullptr)
+	if (GetKey == nullptr)
 	{
 		//キーの指定がない場合終了
 		return;
 	}
 
-	QuickSort<KeyType>(order, fpGetKey, GetBegin(), GetEnd() - 1, size);
+	QuickSort<KeyType>(order, GetKey, GetBegin(), GetEnd() - 1, size);
 
 }
 
 template<typename Type>
 template<typename KeyType>
-inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey)(Type&), Iterator head, Iterator tail, uint32_t _size) {
+inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, FuncGetKey<KeyType> GetKey, Iterator head, Iterator tail, uint32_t _size) {
 
 	//参考にした資料
 	// ウィキペディア
@@ -178,11 +178,11 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 
 	//基準値を決める
 	// 先頭・２番目・末尾から中間の値を選び基準値とする
-	KeyType keyHead = fpGetKey(*head);
-	KeyType keySecond = fpGetKey(*(++head));
-	KeyType keyTail = fpGetKey(*tail);
+	const KeyType& keyHead = GetKey(*head);
+	const KeyType& keySecond = GetKey(*(head+1));
+	const KeyType& keyTail = GetKey(*tail);
 
-	const KeyType PIVOT = GetPivot(keyHead, keyMiddle, keyTail);
+	const KeyType* pPIVOT = GetPivot(keyHead, keySecond, keyTail);
 
 	//入れ替える要素を探索
 	Iterator workHead = head;
@@ -198,13 +198,13 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 		case SortOrder::ASCENDING_ORDER:
 			//先頭から順に基準値以上の値を持つ要素を探索
 			//ピボットよりデータが小さい間、末尾に進む
-			while (fpGetKey(*workHead) < PIVOT) {
+			while (GetKey(*workHead) < *pPIVOT) {
 				workHead++;
 				cntHeadMoved++;
 			}
 			//末尾から順に基準値以下の値を持つ要素を探索
 			//ピボットよりデータが大きい間、先頭に進む
-			while (fpGetKey(*workTail) > PIVOT) {
+			while (GetKey(*workTail) > *pPIVOT) {
 				workTail--;
 				cntTailMoved++;
 			}
@@ -212,13 +212,13 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 		case SortOrder::DESCENDING_ORDER:
 			//先頭から順に基準値以下の値を持つ要素を探索
 			//ピボットよりデータが大きい間、末尾に進む
-			while (fpGetKey(*workHead) > PIVOT) {
+			while (GetKey(*workHead) > *pPIVOT) {
 				workHead++;
 				cntHeadMoved++;
 			}
 			//末尾から順に基準値以上の値を持つ要素を探索
 			//ピボットよりデータが小さい間、先頭に進む
-			while (fpGetKey(*workTail) < PIVOT) {
+			while (GetKey(*workTail) < *pPIVOT) {
 				workTail--;
 				cntTailMoved++;
 			}
@@ -232,42 +232,56 @@ inline void DoublyLinkedList<Type>::QuickSort(SortOrder order, KeyType(*fpGetKey
 
 		//探索した要素を入れ替える
 		Swap(workHead, workTail);
+
+		//ピボットが入れ替えられたら、ピボットの参照先を変更する
+		if (&GetKey(*workHead) == pPIVOT) {
+			pPIVOT = &GetKey(*workTail);
+		}
+		else if(&GetKey(*workTail) == pPIVOT)
+		{
+			pPIVOT = &GetKey(*workHead);
+		}
+
+		//入れ替えた要素を探索から外す
+		workHead++;
+		cntHeadMoved++;
+		workTail--;
+		cntTailMoved++;
 	}
 
 	//入れ替える要素がなくなるまで再帰
-	//workHeadとworkTailは１つすれ違って隣り合っているか、同じ場所にいる、
-	//すれ違って隣り合っているなら１ずつ戻って左右の集合について再帰
-	//ここまでなら１ずつ戻る必要はない
+	//workHeadとworkTailは同じ場所にいるか、１つすれ違って隣り合っている
 	//同じ場所にいるときはその場所がピボットでありこの位置から動かす必要がないので
 	//１ずつ戻りピボットを除いて左右の集合について再帰
-	QuickSort(order, fpGetKey, head, --workHead, cntHeadMoved);
-	QuickSort(order, fpGetKey, ++workTail, tail, cntTailMoved);
+	//すれ違って隣り合っているなら１ずつ戻って左右の集合について再帰
+	QuickSort(order, GetKey, head, --workHead, cntHeadMoved);
+	QuickSort(order, GetKey, ++workTail, tail, cntTailMoved);
 }
 
 template<typename Type>
 template<typename KeyType>
-inline const KeyType& DoublyLinkedList<Type>::GetPivot(const KeyType& head, const KeyType& middle, const KeyType& tail)
+inline const KeyType* DoublyLinkedList<Type>::GetPivot(const KeyType& head, const KeyType& middle, const KeyType& tail)
 {
 	if (head < middle) {
 		if (tail < head) {
-			return head;
+			return &head;
 		}
 		else if (middle < tail) {
-			return middle;
+			return &middle;
 		}
 		else {
-			return tail;
+			return &tail;
 		}
 	}
 	else {
 		if (tail > head) {
-			return head;
+			return &head;
 		}
 		else if (middle > tail) {
-			return middle;
+			return &middle;
 		}
 		else {
-			return tail;
+			return &tail;
 		}
 	}
 }
@@ -275,9 +289,54 @@ inline const KeyType& DoublyLinkedList<Type>::GetPivot(const KeyType& head, cons
 template<typename Type>
 inline void DoublyLinkedList<Type>::Swap(Iterator& it1, Iterator& it2)
 {
-	Type work = *it1;
-	*it1 = *it2;//参照先は変わらず値のみコピーされる
-	*it2 = work;
+	//注意：値を書き換えるとPIVOTの参照するデータが変わる
+	
+#pragma region //データのムーブ
+	//ムーブをするとピボットの参照先が変わる(参照でもポインタでも同じ挙動を示す)　メモリ配置は変わらないはず　ポインタはアドレスを指しそうだが参照と同じ挙動をするのは参照のポインタだから？
+	// 参照先のキーが格納されている構造体がムーブされてなくなる→　キーの参照先を見失う→　参照先のキーが格納されている構造体に新しいメモリ領域がムーブされる→　キーの参照先が新しいメモリ領域になる？
+
+	Type work = std::move(*it1);
+	*it1 = std::move(*it2);
+	*it2 = std::move(work);
+
+#pragma endregion//データのムーブ
+
+#pragma region //ポインタの繋ぎ替え
+
+	//要素が隣り合っているとき付け替えが上手くいかないので分岐する必要がある
+	//コードが冗長になるので中止
+
+	//it1の前後のノードがit2のノードを示すように変更
+	//if (nullptr != it1.pNode->pPrevious) {
+	//	it1.pNode->pPrevious->pNext = it2.pNode;
+	//}
+	//if (nullptr != it1.pNode->pNext) {
+	//	it1.pNode->pNext->pPrevious = it2.pNode;
+	//}
+
+	////it2の前後のノードがit1のノードを示すように変更
+	//if (nullptr != it2.pNode->pPrevious) {
+	//	it2.pNode->pPrevious->pNext = it1.pNode;
+	//}
+	//if (nullptr != it2.pNode->pNext) {
+	//	it2.pNode->pNext->pPrevious = it1.pNode;
+	//}
+
+	////it1とit2のノードの前後へのポインタを入れ替える
+	//Node* pWork = it1.pNode->pPrevious;
+	//it1.pNode->pPrevious = it2.pNode->pPrevious;
+	//it2.pNode->pPrevious = pWork;
+
+	//pWork = it1.pNode->pNext;
+	//it1.pNode->pNext = it2.pNode->pNext;
+	//it2.pNode->pNext = pWork;
+
+	////イテレータの示すノードを入れ替える
+	//Iterator work = it1;
+	//it1 = it2;
+	//it2 = work;
+#pragma endregion //ポインタの繋ぎ替え
+
 }
 
 template<typename Type>

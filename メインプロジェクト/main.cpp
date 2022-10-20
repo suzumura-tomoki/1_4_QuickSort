@@ -82,8 +82,8 @@ int main() {
 	//ソートして出力
 
 	//ソートするキーを指定する関数オブジェクト
-	auto fpGetName = [](ResultData& data) {return data.name; };
-	auto fpGetScore = [](ResultData& data) {return data.score; };
+	auto fpGetName = [](const ResultData& data) ->const std::string& {return data.name; };
+	auto fpGetScore = [](const ResultData& data) ->const int&{return data.score; };
 
 	//末尾のイテレータ
 	const DoublyLinkedList<ResultData>::Iterator END = list.GetEnd();

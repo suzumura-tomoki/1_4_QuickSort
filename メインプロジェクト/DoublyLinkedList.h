@@ -276,26 +276,38 @@ public:
 	ConstIterator GetConstEnd()const;
 
 	/**
+	 * @brief データからソートに使用するキーを取得する関数オブジェクトのポインタ型
+	 * @tparam KeyType キーの型
+	 * @param[in] リストに格納しているデータ
+	 * @return データから取り出したソートに使用するキー
+	 */
+	template<typename KeyType>
+	using FuncGetKey = const KeyType&(*)(const Type&);
+
+	/**
 	 * @brief リストをKeyType型のキーについてソートします
 	 * @tparam KeyType キーの型
 	 * @param[in] order 昇順または降順の指定
-	 * @param[in] fpGetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
+	 * @param[in] GetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
 	 */
 	template<typename KeyType>
-	void Sort(SortOrder order, KeyType(*fpGetKey)(Type&));
+	void Sort(SortOrder order, FuncGetKey<KeyType> GetKey);
 
 private:
+	friend Iterator;
+	friend ConstIterator;
+
 	/**
 	 * @brief 再帰しながらリストをKeyType型のキーについてソートします
 	 * @tparam KeyType キーの型
 	 * @param[in] order 昇順または降順の指定
-	 * @param[in] fpGetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
+	 * @param[in] GetKey 格納されているデータからKeyType型のキーを取得する関数オブジェクトのポインタ
 	 * @param[in] head 先頭のイテレータ
 	 * @param[in] tail 末尾のイテレータ
 	 * @param[in] _size 要素の数
 	 */
 	template<typename KeyType>
-	void QuickSort(SortOrder order, KeyType(*fpGetKey)(Type&), Iterator head, Iterator tail, uint32_t _size);
+	void QuickSort(SortOrder order, FuncGetKey<KeyType> GetKey, Iterator head, Iterator tail, uint32_t _size);
 
 	/**
 	 * @brief ３つのキーからピボットを取得します
@@ -303,10 +315,10 @@ private:
 	 * @param[in] head 先頭要素のキー
 	 * @param[in] middle 中央要素のキー
 	 * @param[in] tail 末尾要素のキー
-	 * @return ３つの引数の中央値
+	 * @return ３つの引数の中央値へのポインタ
 	 */
 	template<typename KeyType>
-	const KeyType& GetPivot(const KeyType& head, const KeyType& middle, const KeyType& tail);
+	const KeyType* GetPivot(const KeyType& head, const KeyType& middle, const KeyType& tail);
 
 	/**
 	 * @brief イテレータの示すデータを入れ替えます
