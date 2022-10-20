@@ -15,7 +15,6 @@ int main() {
 	DoublyLinkedList<ResultData> list;
 	DoublyLinkedList<ResultData>::Iterator it;
 
-	//スコア読み込み
 	while (ifsScoreFile.eof() == false)
 	{
 		//ファイルの読み取り
