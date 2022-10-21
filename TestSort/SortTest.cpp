@@ -392,7 +392,7 @@ namespace ex01_DataStructure
 				EXPECT_EQ(testArray[i].score, it++->score);
 			}
 
-			//第二引数にnullptrを渡して降順ソート
+			//第二引数にnullptrを渡して降順にソート
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, nullptr);
 
 			//データの並び順が変わっていないことを確認
