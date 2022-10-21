@@ -373,31 +373,32 @@ namespace ex01_DataStructure
 			ResultData data3 = { 3, "c" };
 
 			//比較用の配列
-			//昇順になっている配列
-			ResultData asArray[3] = { data1, data2, data3};
+			//昇順や降順に並んでいない配列
+			const int ARRAY_SIZE = 3;
+			ResultData testArray[ARRAY_SIZE] = { data1, data3, data2};
 
-			//リストに挿入
+			//同じ並びになるようリストに挿入
 			DoublyLinkedList<ResultData>::Iterator it = list.GetBegin();
-			for (int i = 0; i < 3; i++) {
-				list.Insert(it, asArray[i]);
+			for (int i = 0; i < ARRAY_SIZE; i++) {
+				list.Insert(it, testArray[ARRAY_SIZE-1-i]);
 			}
 
-			//昇順にソート
-			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, fpGetScore);
-
-			//データの並び順を確認
-			it = list.GetBegin();
-			for (int i = 0; i < list.GetSize(); i++) {
-				EXPECT_EQ(asArray[i].score, it++->score);
-			}
-
-			//第二引数にnullptrを渡してソート
+			//第二引数にnullptrを渡して昇順にソート
 			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::ASCENDING_ORDER, nullptr);
 
-			//データの並び順を確認
+			//データの並び順が変わっていないことを確認
 			it = list.GetBegin();
 			for (int i = 0; i < list.GetSize(); i++) {
-				EXPECT_EQ(asArray[i].score, it++->score);
+				EXPECT_EQ(testArray[i].score, it++->score);
+			}
+
+			//第二引数にnullptrを渡して降順ソート
+			list.Sort<int>(DoublyLinkedList<ResultData>::SortOrder::DESCENDING_ORDER, nullptr);
+
+			//データの並び順が変わっていないことを確認
+			it = list.GetBegin();
+			for (int i = 0; i < list.GetSize(); i++) {
+				EXPECT_EQ(testArray[i].score, it++->score);
 			}
 		}
 
